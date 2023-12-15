@@ -19,6 +19,7 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
     "gh-pages": "^3.2.3"
   },
