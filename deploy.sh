@@ -1,25 +1,14 @@
-#!/usr/bin/env sh
-
-# abort on errors
-set -e
-
-# build
-npm run build
-
-# navigate into the build output directory
+# Navigate into the build output directory
 cd dist
 
-# if you are deploying to a custom domain
-# echo 'www.example.com' > CNAME
-
+# Initialize a new Git repository in the dist directory
 git init
-git add -A
-git commit -m 'deploy'
 
-# if you are deploying to https://<USERNAME>.github.io
-# git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git main
+# Add all files to the repository
+git add -A./deploy.sh
 
-# if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:Kreal11/vue-test-project.git main:gh-pages
+# Commit the changes
+git commit -m 'Deploy to gh-pages'
 
-cd -
+# Force push to the gh-pages branch on GitHub
+git push -f git@github.com:Kreal11/vue-test-project.git gh-pages

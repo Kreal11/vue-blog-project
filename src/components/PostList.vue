@@ -1,11 +1,19 @@
-<template lang="">
-  <div class="post" v-for="(post, index) in posts" :key="index">
-    <div><strong>Name: </strong> {{ post.title }}</div>
-    <div><strong>Description</strong> {{ post.body }}</div>
+<template>
+  <div v-if="posts.length">
+    <h3>Users list</h3>
+    <post-item
+      :post="post"
+      v-for="post in posts"
+      :key="post.id"
+      @remove="$emit('remove', post)"
+    />
   </div>
+  <h2 v-else="!posts.length" style="color: green">There are no posts yet</h2>
 </template>
 <script>
+import PostItem from "@/components/PostItem.vue";
 export default {
+  components: { PostItem },
   props: {
     posts: {
       type: Array,
@@ -14,10 +22,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-.post {
-  padding: 15px;
-  border: 2px solid darkgreen;
-  margin-top: 15px;
-}
-</style>
+<style scoped></style>
