@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="post" v-for="post in posts">
+  <div class="post" v-for="(post, index) in posts" :key="index">
     <div><strong>Name: </strong> {{ post.title }}</div>
     <div><strong>Description</strong> {{ post.body }}</div>
   </div>
