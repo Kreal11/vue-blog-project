@@ -1,6 +1,9 @@
 <template>
   <div class="app">
     <h1>Page with posts</h1>
+
+    <my-input type="text" v-model="searchQuery" placeholder="Search post" />
+
     <div class="app__btns">
       <my-button @click="showDialog">Create post</my-button>
 
@@ -12,7 +15,7 @@
     </my-dialog>
 
     <post-list
-      :posts="sortedPosts"
+      :posts="sortedAndSearchedPosts"
       @remove="removePost"
       v-if="!isPostsLoading"
     />
@@ -25,10 +28,14 @@ import PostForm from "@/components/PostForm.vue";
 import PostList from "./components/PostList.vue";
 import MyButton from "./components/UI/MyButton.vue";
 import MySelect from "./components/UI/MySelect.vue";
+import MyDialog from "./components/UI/MyDialog.vue";
+import MyInput from "./components/UI/MyInput.vue";
 import axios from "axios";
 
 export default {
   components: {
+    MyInput,
+    MyDialog,
     MyButton,
     MySelect,
     PostForm,
@@ -40,6 +47,7 @@ export default {
       dialogVisible: false,
       isPostsLoading: false,
       selectedSort: "",
+      searchQuery: "",
       sortOptions: [
         { value: "title", name: "By name" },
         { value: "body", name: "By description" },
@@ -80,6 +88,11 @@ export default {
     sortedPosts() {
       return [...this.posts].sort((post1, post2) =>
         post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+      );
+    },
+    sortedAndSearchedPosts() {
+      return this.sortedPosts.filter((post) =>
+        post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },
