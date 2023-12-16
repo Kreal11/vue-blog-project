@@ -4,7 +4,7 @@
     <my-button @click="showDialog" style="margin: 15px 0"
       >Create post</my-button
     >
-    <my-dialog v-model:show="dialogVisible" :show="true">
+    <my-dialog v-model:show="dialogVisible">
       <post-form @create="createPost" />
     </my-dialog>
     <post-list :posts="posts" @remove="removePost" />
