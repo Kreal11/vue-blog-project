@@ -1,14 +1,21 @@
 <template>
   <div class="app">
     <h1>Page with posts</h1>
+    <div class="app__btns">
+      <my-button @click="showDialog">Create post</my-button>
 
-    <my-button @click="showDialog" style="margin: 15px 0"
-      >Create post</my-button
-    >
+      <my-select v-model="selectedSort" :options="sortOptions" />
+    </div>
+
     <my-dialog v-model:show="dialogVisible">
       <post-form @create="createPost" />
     </my-dialog>
-    <post-list :posts="posts" @remove="removePost" v-if="!isPostsLoading" />
+
+    <post-list
+      :posts="sortedPosts"
+      @remove="removePost"
+      v-if="!isPostsLoading"
+    />
     <div v-else>Loading...</div>
   </div>
 </template>
@@ -16,10 +23,14 @@
 <script>
 import PostForm from "@/components/PostForm.vue";
 import PostList from "./components/PostList.vue";
+import MyButton from "./components/UI/MyButton.vue";
+import MySelect from "./components/UI/MySelect.vue";
 import axios from "axios";
 
 export default {
   components: {
+    MyButton,
+    MySelect,
     PostForm,
     PostList,
   },
@@ -28,6 +39,11 @@ export default {
       posts: [],
       dialogVisible: false,
       isPostsLoading: false,
+      selectedSort: "",
+      sortOptions: [
+        { value: "title", name: "By name" },
+        { value: "body", name: "By description" },
+      ],
     };
   },
   methods: {
@@ -44,13 +60,13 @@ export default {
     async fetchPosts() {
       try {
         this.isPostsLoading = true;
-        setTimeout(async () => {
-          const response = await axios.get(
-            "https://jsonplaceholder.typicode.com/posts?_limit=10"
-          );
-          this.posts = response.data;
-          this.isPostsLoading = false;
-        }, 1000);
+
+        const response = await axios.get(
+          "https://jsonplaceholder.typicode.com/posts?_limit=10"
+        );
+        this.posts = response.data;
+
+        this.isPostsLoading = false;
       } catch (e) {
         alert("Error");
       } finally {
@@ -59,6 +75,20 @@ export default {
   },
   mounted() {
     this.fetchPosts();
+  },
+  computed: {
+    sortedPosts() {
+      return [...this.posts].sort((post1, post2) =>
+        post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+      );
+    },
+  },
+  watch: {
+    // selectedSort(newValue) {
+    //   this.posts.sort((post1, post2) => {
+    //     return post1[newValue]?.localeCompare(post2[newValue]);
+    //   });
+    // },
   },
 };
 </script>
@@ -72,5 +102,11 @@ export default {
 
 .app {
   padding: 20px;
+}
+
+.app__btns {
+  margin: 15px 0;
+  display: flex;
+  justify-content: space-between;
 }
 </style>
