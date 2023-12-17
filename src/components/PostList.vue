@@ -13,7 +13,7 @@
   <h2 v-else="!posts.length" style="color: green">There are no posts yet</h2>
 </template>
 <script>
-import PostItem from "@/components/PostItem.vue";
+import PostItem from "@/components/PostItem";
 export default {
   components: { PostItem },
   props: {
