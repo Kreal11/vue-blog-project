@@ -1,9 +1,11 @@
 <template>
   <div class="app">
+    <h1>Post page with store and vuex using</h1>
     <my-input
       v-focus
       type="text"
-      v-model="searchQuery"
+      :model-value="searchQuery"
+      @update:model-value="setSearchQuery"
       placeholder="Search post"
     />
 
@@ -24,24 +26,13 @@
     />
     <div v-else>Loading...</div>
     <div v-intersection="loadMorePosts" class="observer"></div>
-    <!-- <div class="page__wrapper">
-      <div
-        v-for="pageNumber in totalPage"
-        :key="pageNumber"
-        class="page"
-        :class="{ 'current-page': page === pageNumber }"
-        @click="changePage(pageNumber)"
-      >
-        {{ pageNumber }}
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script>
 import PostForm from "@/components/PostForm";
 import PostList from "@/components/PostList";
-import axios from "axios";
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
@@ -52,19 +43,17 @@ export default {
     return {
       posts: [],
       dialogVisible: false,
-      isPostsLoading: false,
-      selectedSort: "",
-      searchQuery: "",
-      page: 1,
-      limit: 10,
-      totalPage: 0,
-      sortOptions: [
-        { value: "title", name: "By name" },
-        { value: "body", name: "By description" },
-      ],
     };
   },
   methods: {
+    ...mapMutations({
+      setPage: "post/setPage",
+      setSearchQuery: "post/setSearchQuery",
+    }),
+    ...mapActions({
+      loadMorePosts: "post/loadMorePosts",
+      fetchPosts: "post/fetchPosts",
+    }),
     createPost(post) {
       this.posts.push(post);
       this.dialogVisible = false;
@@ -78,67 +67,70 @@ export default {
     // changePage(pageNumber) {
     //   this.page = pageNumber;
     // },
-    async fetchPosts() {
-      try {
-        this.isPostsLoading = true;
+    // async fetchPosts() {
+    //   try {
+    //     this.isPostsLoading = true;
 
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts",
-          {
-            params: {
-              _page: this.page,
-              _limit: this.limit,
-            },
-          }
-        );
-        this.totalPage = Math.ceil(
-          response.headers["x-total-count"] / this.limit
-        );
-        this.posts = response.data;
+    //     const response = await axios.get(
+    //       "https://jsonplaceholder.typicode.com/posts",
+    //       {
+    //         params: {
+    //           _page: this.page,
+    //           _limit: this.limit,
+    //         },
+    //       }
+    //     );
+    //     this.totalPage = Math.ceil(
+    //       response.headers["x-total-count"] / this.limit
+    //     );
+    //     this.posts = response.data;
 
-        this.isPostsLoading = false;
-      } catch (e) {
-        alert("Error");
-      } finally {
-      }
-    },
-    async loadMorePosts() {
-      try {
-        this.page += 1;
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts",
-          {
-            params: {
-              _page: this.page,
-              _limit: this.limit,
-            },
-          }
-        );
-        this.totalPage = Math.ceil(
-          response.headers["x-total-count"] / this.limit
-        );
-        this.posts = [...this.posts, ...response.data];
-      } catch (e) {
-        alert("Error");
-      }
-    },
+    //     this.isPostsLoading = false;
+    //   } catch (e) {
+    //     alert("Error");
+    //   } finally {
+    //   }
+    // },
+    // async loadMorePosts() {
+    //   try {
+    //     this.page += 1;
+    //     const response = await axios.get(
+    //       "https://jsonplaceholder.typicode.com/posts",
+    //       {
+    //         params: {
+    //           _page: this.page,
+    //           _limit: this.limit,
+    //         },
+    //       }
+    //     );
+    //     this.totalPage = Math.ceil(
+    //       response.headers["x-total-count"] / this.limit
+    //     );
+    //     this.posts = [...this.posts, ...response.data];
+    //   } catch (e) {
+    //     alert("Error");
+    //   }
+    // },
   },
   mounted() {
     this.fetchPosts();
-
-    // const options = {
-    //   rootMargin: "0px",
-    //   threshold: 1.0,
-    // };
-    // const callback = (entries, observer) => {
-    //   if (entries[0].isIntersecting && this.page < this.totalPage) {
-    //     this.loadMorePosts();
-    //   }
-    // };
-    // const observer = new IntersectionObserver(callback, options);
-    // observer.observe(this.$refs.observer);
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      posts: (state) => state.post.posts,
+      isPostsLoading: (state) => state.post.isPostsLoading,
+      selectedSort: (state) => state.post.selectedSort,
+      searchQuery: (state) => state.post.searchQuery,
+      page: (state) => state.post.page,
+      limit: (state) => state.post.limit,
+      totalPages: (state) => state.post.totalPages,
+      sortOptions: (state) => state.post.sortOptions,
+    }),
+    ...mapGetters({
+      sortedPosts: "post/sortedPosts",
+      sortedAndSearchedPosts: "post/sortedAndSearchedPosts",
+    }),
+  },
   watch: {
     // page() {
     //   this.fetchPosts();
