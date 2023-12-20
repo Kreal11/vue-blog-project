@@ -12,7 +12,11 @@
     <div class="app__btns">
       <my-button @click="showDialog">Create post</my-button>
 
-      <my-select v-model="selectedSort" :options="sortOptions" />
+      <my-select
+        :model-value="selectedSort"
+        @update:model-value="setSelectedSort"
+        :options="sortOptions"
+      />
     </div>
 
     <my-dialog v-model:show="dialogVisible">
@@ -49,6 +53,7 @@ export default {
     ...mapMutations({
       setPage: "post/setPage",
       setSearchQuery: "post/setSearchQuery",
+      setSelectedSort: "post/setSelectedSort",
     }),
     ...mapActions({
       loadMorePosts: "post/loadMorePosts",
